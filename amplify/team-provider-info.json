@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-securemessenger-staging-183254-authRole",
+      "UnauthRoleArn": "arn:aws:iam::178773195501:role/amplify-securemessenger-staging-183254-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::178773195501:role/amplify-securemessenger-staging-183254-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-securemessenger-staging-183254-deployment",
+      "UnauthRoleName": "amplify-securemessenger-staging-183254-unauthRole",
+      "StackName": "amplify-securemessenger-staging-183254",
+      "StackId": "arn:aws:cloudformation:us-east-1:178773195501:stack/amplify-securemessenger-staging-183254/a8879070-3487-11ee-8dde-0ee83e015889",
+      "AmplifyAppId": "d2lmjyh2hpbssc"
+    },
+    "categories": {
+      "auth": {
+        "securemessenger": {}
+      }
+    }
+  }
+}
