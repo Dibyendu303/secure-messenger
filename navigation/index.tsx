@@ -11,6 +11,7 @@ import { RootStackParamList } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 
 import HomeScreen from "../screens/HomeScreen";
+import UsersScreen from "../screens/UsersScreen";
 import ChatRoomScreen from "../screens/ChatRoomScreen";
 import HomeHeader from "./HomeHeader";
 import ChatRoomHeader from "./ChatRoomHeader";
@@ -48,6 +49,13 @@ function RootNavigator() {
           headerTitle: (props) => <ChatRoomHeader {...props} />,
           headerBackTitleVisible: false,
         })}
+      />
+      <Stack.Screen
+        name="UsersScreen"
+        component={UsersScreen}
+        options={{
+          title: "Users",
+        }}
       />
       <Stack.Screen
         name="NotFound"

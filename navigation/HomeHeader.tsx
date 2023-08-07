@@ -1,8 +1,10 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Pressable } from "react-native";
 import React from "react";
 import { Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 const HomeHeader = (props) => {
+  const navigation = useNavigation();
   return (
     <View
       style={{
@@ -34,7 +36,9 @@ const HomeHeader = (props) => {
         color="black"
         style={{ marginRight: 20 }}
       />
-      <Feather name="edit-2" size={24} color="black" />
+      <Pressable onPress={() => navigation.navigate("UsersScreen")}>
+        <Feather name="edit-2" size={24} color="black" />
+      </Pressable>
     </View>
   );
 };

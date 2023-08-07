@@ -5,7 +5,7 @@ import ChatRoomItem from "../components/ChatRoomItem";
 import ChatRoomsData from "../assets/dummy-data/ChatRooms";
 import { Auth } from "aws-amplify";
 
-export default function TabOneScreen() {
+export default function HomeScreen() {
   const logOut = () => {
     Auth.signOut();
   };
