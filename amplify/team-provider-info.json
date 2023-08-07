@@ -9,10 +9,20 @@
       "UnauthRoleName": "amplify-securemessenger-staging-183254-unauthRole",
       "StackName": "amplify-securemessenger-staging-183254",
       "StackId": "arn:aws:cloudformation:us-east-1:178773195501:stack/amplify-securemessenger-staging-183254/a8879070-3487-11ee-8dde-0ee83e015889",
-      "AmplifyAppId": "d2lmjyh2hpbssc"
+      "AmplifyAppId": "d2lmjyh2hpbssc",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-securemessenger-staging-183254-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },
     "categories": {
       "auth": {
+        "securemessenger": {}
+      },
+      "function": {
+        "securemessengerPostConfirmation": {
+          "deploymentBucketName": "amplify-securemessenger-staging-183254-deployment",
+          "s3Key": "amplify-builds/securemessengerPostConfirmation-45644573784339594d4d-build.zip"
+        }
+      },
+      "api": {
         "securemessenger": {}
       }
     }
