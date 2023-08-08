@@ -17,10 +17,11 @@ import {
 } from "@expo/vector-icons";
 import { Auth, DataStore } from "aws-amplify";
 import { ChatRoom, Message } from "../../src/models";
+import EmojiSelector from "react-native-emoji-selector";
 
 const MessageInput = ({ chatRoom }) => {
   const [message, setMessage] = useState("");
-
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const sendMessage = async () => {
     const user = await Auth.currentAuthenticatedUser();
     try {
@@ -34,6 +35,7 @@ const MessageInput = ({ chatRoom }) => {
 
       updateLastMessage(newMessage);
       setMessage("");
+      setIsEmojiPickerOpen(false);
       console.log("Message sent successfully");
     } catch (e) {
       console.log("Error while sending message");
@@ -42,14 +44,19 @@ const MessageInput = ({ chatRoom }) => {
   };
 
   const updateLastMessage = async (newMessage) => {
-    const original = await DataStore.query(ChatRoom, chatRoom.id);
+    try {
+      const original = await DataStore.query(ChatRoom, chatRoom.id);
 
-    if (original) {
-      const updatedChatRoom = await DataStore.save(
-        ChatRoom.copyOf(original, (updated) => {
-          updated.lastMessage = newMessage;
-        })
-      );
+      if (original) {
+        await DataStore.save(
+          ChatRoom.copyOf(original, (updated) => {
+            updated.lastMessage = newMessage;
+          })
+        );
+      }
+    } catch (e) {
+      console.log("Error while updating chat room last message");
+      console.log(e);
     }
   };
 
@@ -65,39 +72,58 @@ const MessageInput = ({ chatRoom }) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.root}
+      style={[styles.root, { height: isEmojiPickerOpen ? "50%" : "auto" }]}
       keyboardVerticalOffset={100}
     >
-      <View style={styles.inputContainer}>
-        <SimpleLineIcons
-          name="emotsmile"
-          color={"#595959"}
-          size={24}
-          style={styles.icons}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Enter message"
-          value={message}
-          onChangeText={setMessage}
-        />
-        <Feather name="camera" size={24} color="#595959" style={styles.icons} />
-        <MaterialCommunityIcons
-          name="microphone"
-          color={"#595959"}
-          size={24}
-          style={styles.icons}
-        />
+      <View style={styles.row}>
+        <View style={styles.inputContainer}>
+          <Pressable
+            onPress={() => setIsEmojiPickerOpen((prevState) => !prevState)}
+          >
+            <SimpleLineIcons
+              name="emotsmile"
+              color={"#595959"}
+              size={24}
+              style={styles.icons}
+            />
+          </Pressable>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter message"
+            value={message}
+            onChangeText={setMessage}
+          />
+          <Feather
+            name="camera"
+            size={24}
+            color="#595959"
+            style={styles.icons}
+          />
+          <MaterialCommunityIcons
+            name="microphone"
+            color={"#595959"}
+            size={24}
+            style={styles.icons}
+          />
+        </View>
+        <Pressable onPress={onPress} style={styles.buttonContainer}>
+          <Text style={styles.buttonText}>
+            {message ? (
+              <Ionicons name="send" size={25} color="white" />
+            ) : (
+              <AntDesign name="plus" size={25} color="white" />
+            )}
+          </Text>
+        </Pressable>
       </View>
-      <Pressable onPress={onPress} style={styles.buttonContainer}>
-        <Text style={styles.buttonText}>
-          {message ? (
-            <Ionicons name="send" size={25} color="white" />
-          ) : (
-            <AntDesign name="plus" size={25} color="white" />
-          )}
-        </Text>
-      </Pressable>
+      {isEmojiPickerOpen && (
+        <EmojiSelector
+          onEmojiSelected={(emoji) =>
+            setMessage((currMessage) => currMessage + emoji)
+          }
+          columns={8}
+        />
+      )}
     </KeyboardAvoidingView>
   );
 };

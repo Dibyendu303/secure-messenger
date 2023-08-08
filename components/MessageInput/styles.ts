@@ -2,8 +2,10 @@ import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   root: {
-    flexDirection: "row",
     margin: 10,
+  },
+  row: {
+    flexDirection: "row",
   },
   inputContainer: {
     backgroundColor: "#f2f2f2",

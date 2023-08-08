@@ -1,10 +1,24 @@
 import { View, Text, Image, Pressable } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { Auth, DataStore } from "aws-amplify";
+import { User } from "../src/models";
 
 const HomeHeader = (props) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const authUser = await Auth.currentAuthenticatedUser();
+      const dbUser = await DataStore.query(User, authUser.attributes.sub);
+      setUser(dbUser);
+    };
+    fetchUser();
+  }, []);
+
   const navigation = useNavigation();
+
   return (
     <View
       style={{
@@ -16,7 +30,7 @@ const HomeHeader = (props) => {
     >
       <Image
         source={{
-          uri: "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/vadim.jpg",
+          uri: user?.imageUri,
         }}
         style={{ width: 30, height: 30, borderRadius: 30 }}
       />
