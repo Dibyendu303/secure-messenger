@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, Pressable, Text } from "react-native";
-import ChatRoomItem from "../components/ChatRoomItem";
-
-import ChatRoomsData from "../assets/dummy-data/ChatRooms";
 import { Auth, DataStore } from "aws-amplify";
+import ChatRoomItem from "../components/ChatRoomItem";
 import { ChatRoom, ChatRoomUser } from "../src/models";
 
 export default function HomeScreen() {

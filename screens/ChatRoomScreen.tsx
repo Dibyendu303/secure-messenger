@@ -6,7 +6,6 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Message from "../components/Message";
-import MessageData from "../assets/dummy-data/Chats";
 import MessageInput from "../components/MessageInput";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ChatRoom, Message as MessageModel } from "../src/models";
