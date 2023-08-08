@@ -3,7 +3,6 @@ import React from "react";
 import { Feather } from "@expo/vector-icons";
 
 const ChatRoomHeader = (props) => {
-  console.log("Props", props);
   return (
     <View
       style={{

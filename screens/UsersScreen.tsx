@@ -12,11 +12,8 @@ export default function UsersScreen() {
     // query users
     const fetchUsers = async () => {
       try {
-        console.log("Fetching users");
         const fetchedUsers = await DataStore.query(User);
         setUsers(fetchedUsers);
-        console.log("Successfully fetched users");
-        console.log(fetchedUsers);
       } catch (e) {
         console.log("Unable to fetch users from Datastore");
         console.log(e);

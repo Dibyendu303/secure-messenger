@@ -15,13 +15,42 @@ import {
   Feather,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
+import { Auth, DataStore } from "aws-amplify";
+import { ChatRoom, Message } from "../../src/models";
 
-const MessageInput = () => {
+const MessageInput = ({ chatRoom }) => {
   const [message, setMessage] = useState("");
 
-  const sendMessage = () => {
-    console.warn("Sending: ", message);
-    setMessage("");
+  const sendMessage = async () => {
+    const user = await Auth.currentAuthenticatedUser();
+    try {
+      const newMessage = await DataStore.save(
+        new Message({
+          content: message,
+          userID: user.attributes.sub,
+          chatroomID: chatRoom.id,
+        })
+      );
+
+      updateLastMessage(newMessage);
+      setMessage("");
+      console.log("Message sent successfully");
+    } catch (e) {
+      console.log("Error while sending message");
+      console.log(e);
+    }
+  };
+
+  const updateLastMessage = async (newMessage) => {
+    const original = await DataStore.query(ChatRoom, chatRoom.id);
+
+    if (original) {
+      const updatedChatRoom = await DataStore.save(
+        ChatRoom.copyOf(original, (updated) => {
+          updated.lastMessage = newMessage;
+        })
+      );
+    }
   };
 
   const onPlusClicked = () => {

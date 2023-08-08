@@ -8,31 +8,70 @@ import { Auth, DataStore } from "aws-amplify";
 const ChatRoomItem = ({ user }) => {
   const navigation = useNavigation();
 
+  const findCommonChatRooms = (arr1, arr2) => {
+    return arr1.filter((value) => arr2.includes(value));
+  };
+
   const onPress = async () => {
-    // Todo: if there is already a chatroom the redirect there
+    let dbUser = null;
+    try {
+      const authUser = await Auth.currentAuthenticatedUser();
+      dbUser = await DataStore.query(User, authUser.attributes.sub);
+    } catch (e) {
+      console.log("Error in getting authenticated user");
+      console.log(e);
+    }
 
-    // create a chat room
-    const newChatRoom = await DataStore.save(new ChatRoom({ newMessages: 0 }));
+    // check if there is already a chatroom the redirect there
+    const myChatRooms = (
+      await DataStore.query(ChatRoomUser, (chatRoomUser) =>
+        chatRoomUser.userId.eq(dbUser.id)
+      )
+    ).map((chatRoomUser) => chatRoomUser.chatRoomId);
 
-    // add authenticated user to the chat room
-    const authUser = await Auth.currentAuthenticatedUser();
-    const dbUser = await DataStore.query(User, authUser.attributes.sub);
-    await DataStore.save(
-      new ChatRoomUser({
-        user: dbUser,
-        chatRoom: newChatRoom,
-      })
-    );
+    const userChatRooms = (
+      await DataStore.query(ChatRoomUser, (chatRoomUser) =>
+        chatRoomUser.userId.eq(user.id)
+      )
+    ).map((chatRoomUser) => chatRoomUser.chatRoomId);
 
-    // add clicked user to the chat room
-    await DataStore.save(
-      new ChatRoomUser({
-        user,
-        chatRoom: newChatRoom,
-      })
-    );
+    let newChatRoomId = null;
+    const commonChatRooms = findCommonChatRooms(myChatRooms, userChatRooms);
+    if (commonChatRooms.length > 0) {
+      newChatRoomId = commonChatRooms[0];
+    } else {
+      let newChatRoom;
+      try {
+        // create a chat room
+        newChatRoom = await DataStore.save(new ChatRoom({ newMessages: 0 }));
+        newChatRoomId = newChatRoom.id;
+      } catch (e) {
+        console.log("Error in creating chatroom.");
+        console.log(e);
+      }
 
-    navigation.navigate("ChatRoom", { id: newChatRoom.id });
+      try {
+        // add authenticated user to the chat room
+        await DataStore.save(
+          new ChatRoomUser({
+            user: dbUser,
+            chatRoom: newChatRoom,
+          })
+        );
+
+        // add clicked user to the chat room
+        await DataStore.save(
+          new ChatRoomUser({
+            user: user,
+            chatRoom: newChatRoom,
+          })
+        );
+      } catch (e) {
+        console.log("Error in adding users to chatroom");
+        console.log(e);
+      }
+    }
+    navigation.navigate("ChatRoom", { id: newChatRoomId });
   };
 
   return (

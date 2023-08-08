@@ -13,22 +13,17 @@ export default function HomeScreen() {
     const fetchChatRooms = async () => {
       const currUser = await Auth.currentAuthenticatedUser();
       const currUserId = currUser.attributes.sub;
-      console.log("My ID: ", currUserId);
 
-      console.log("Fetching chat room users");
       const chatRoomUsers = await DataStore.query(ChatRoomUser);
-      console.log("Successfully fetched chat room users");
 
       const myChatRooms = chatRoomUsers
         .filter((chatRoomUser) => chatRoomUser.userId === currUserId)
         .map((chatRoomUser) => chatRoomUser.chatRoomId);
 
-      console.log(myChatRooms);
-
       const fetchedChatRooms = await Promise.all(
         myChatRooms.map(async (id) => await DataStore.query(ChatRoom, id))
       );
-      console.log(fetchedChatRooms);
+      // console.log("Chat rooms: ", fetchedChatRooms);
       setChatRooms(fetchedChatRooms);
     };
     fetchChatRooms();
