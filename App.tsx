@@ -8,7 +8,7 @@ import {
   withAuthenticator,
   useAuthenticator,
 } from "@aws-amplify/ui-react-native";
-
+import "@azure/core-asynciterator-polyfill";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
