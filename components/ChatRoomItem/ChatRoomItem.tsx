@@ -4,11 +4,20 @@ import styles from "./styles";
 import { useNavigation } from "@react-navigation/native";
 import { ChatRoomUser, Message, User } from "../../src/models";
 import { Auth, DataStore } from "aws-amplify";
+import {
+  SimpleLineIcons,
+  Ionicons,
+  AntDesign,
+  Feather,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 
 const ChatRoomItem = ({ chatRoom }) => {
   // const [users, setUsers] = useState<User[]>([]);
   const [displayUser, setDisplayUser] = useState<User | null>(null);
   const [lastMessage, setLastMessage] = useState<Message | undefined>();
+  const [isLastMessageMine, setIsLastMessageMine] = useState<bool>(false);
+  const [user, setUser] = useState<string | null>(null);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -26,6 +35,7 @@ const ChatRoomItem = ({ chatRoom }) => {
         chatRoomUsers.find((user) => user.id !== authUser.attributes.sub) ||
           null
       );
+      setUser(authUser.attributes.sub);
     };
     fetchUsers();
   }, []);
@@ -42,6 +52,7 @@ const ChatRoomItem = ({ chatRoom }) => {
         chatRoom.chatRoomLastMessageId
       );
       setLastMessage(lastmsg);
+      setIsLastMessageMine(lastmsg?.userID === user);
     } catch (e) {
       console.log(
         "Error in getting last message with chatroomId: ",
@@ -49,6 +60,31 @@ const ChatRoomItem = ({ chatRoom }) => {
       );
       console.log(e);
     }
+  };
+
+  const getLastMessageContent = () => {
+    let output = "";
+    if (isLastMessageMine) output += "You: ";
+    if (!lastMessage) return "";
+    if (lastMessage.content) return output + lastMessage.content;
+    else if (lastMessage.image)
+      return (
+        <Text>
+          {output}Image
+          <Feather name="image" size={12} color="lightgray" />
+        </Text>
+      );
+    else if (lastMessage.audio)
+      return (
+        <Text>
+          {output}Audio
+          <MaterialCommunityIcons
+            name="microphone"
+            size={12}
+            color="lightgray"
+          />
+        </Text>
+      );
   };
 
   const onPress = () => {
@@ -73,7 +109,7 @@ const ChatRoomItem = ({ chatRoom }) => {
           <Text style={styles.text}>{lastMessage?.createdAt ?? ""}</Text>
         </View>
         <Text numberOfLines={1} style={styles.text}>
-          {lastMessage?.content ?? ""}
+          {getLastMessageContent()}
         </Text>
       </View>
     </Pressable>

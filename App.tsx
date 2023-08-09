@@ -29,3 +29,16 @@ function App() {
 }
 
 export default withAuthenticator(App);
+
+// "plugins": [
+//   [
+//     "expo-image-picker",
+//     {
+//       "photosPermission": "The app accesses your photos to let you share them with your friends."
+//     },
+//     "expo-camera",
+//     {
+//       "cameraPermission": "Allow Secure Messenger to access your camera."
+//     }
+//   ]
+// ]

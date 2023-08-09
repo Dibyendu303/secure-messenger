@@ -1,0 +1,13 @@
+{
+  "resourceName": "securemessengerstorage",
+  "policyUUID": "833313b2",
+  "bucketName": "securemessenger23204eaf785246fa9bffbebb8ffe9374",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

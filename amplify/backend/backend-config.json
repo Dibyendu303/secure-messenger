@@ -82,5 +82,12 @@
         }
       ]
     }
+  },
+  "storage": {
+    "securemessengerstorage": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
+    }
   }
 }

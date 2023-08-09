@@ -14,9 +14,9 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderWidth: 1,
     borderColor: "#dedede",
+    padding: 5,
     alignItems: "center",
     flexDirection: "row",
-    padding: 5,
   },
   input: {
     marginHorizontal: 5,
@@ -37,6 +37,17 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 35,
+  },
+  sendImageContainer: {
+    marginVertical: 10,
+    borderWidth: 1,
+    borderColor: "lightgray",
+    borderRadius: 10,
+  },
+  innerContainer: {
+    flexDirection: "row",
+    alignSelf: "stretch",
+    justifyContent: "space-between",
   },
 });
 

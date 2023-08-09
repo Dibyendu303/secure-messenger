@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./styles";
 import { User } from "../../src/models";
 import { Auth, DataStore } from "aws-amplify";
-
-const myID = "u1";
+import { S3Image } from "aws-amplify-react-native";
 
 const Message = ({ message }) => {
   const [user, setUser] = useState<User | undefined>();
@@ -35,9 +34,23 @@ const Message = ({ message }) => {
           : styles.sentMessageContainer,
       ]}
     >
-      <Text style={isReceived ? styles.receivedText : styles.sentText}>
-        {message.content}
-      </Text>
+      {message.image && (
+        <View style={{ width: "75%", marginBottom: message.content ? 5 : 0 }}>
+          <S3Image
+            imgKey={message.image}
+            style={{
+              width: "100%",
+              aspectRatio: 4 / 3,
+            }}
+            resizeMode="cover"
+          />
+        </View>
+      )}
+      {message.content && (
+        <Text style={isReceived ? styles.receivedText : styles.sentText}>
+          {message.content}
+        </Text>
+      )}
     </View>
   );
 };
