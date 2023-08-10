@@ -82,6 +82,7 @@ const MessageInput = ({ chatRoom }: IChatRoomProps) => {
           content: message,
           userID: user.attributes.sub,
           chatroomID: chatRoom.id,
+          status: "SENT",
         })
       );
 
@@ -115,6 +116,7 @@ const MessageInput = ({ chatRoom }: IChatRoomProps) => {
             image: key,
             userID: user.attributes.sub,
             chatroomID: chatRoom.id,
+            status: "SENT",
           })
         );
         updateLastMessage(newMessage);
@@ -215,6 +217,7 @@ const MessageInput = ({ chatRoom }: IChatRoomProps) => {
             audio: key,
             userID: user.attributes.sub,
             chatroomID: chatRoom.id,
+            status: "SENT",
           })
         );
         updateLastMessage(newMessage);

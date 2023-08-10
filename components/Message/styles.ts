@@ -2,17 +2,27 @@ import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    paddingLeft: 10,
+    paddingVertical: 10,
     margin: 10,
     borderRadius: 10,
     maxWidth: "75%",
+    flexDirection: "row",
+    alignItems: "flex-end",
+    // backgroundColor: "yellow",
+  },
+  innerContainer: {
+    // backgroundColor: "lightblue",
+    maxWidth: "95%",
   },
   sentMessageContainer: {
+    paddingRight: 5,
     marginLeft: "auto",
     marginRight: 10,
     backgroundColor: "lightgrey",
   },
   receivedMessageContainer: {
+    paddingRight: 10,
     marginLeft: 10,
     marginRight: "auto",
     backgroundColor: "#3777f0",
@@ -22,6 +32,10 @@ const styles = StyleSheet.create({
   },
   receivedText: {
     color: "white",
+  },
+  statusContainer: {
+    marginHorizontal: 2,
+    // backgroundColor: "lightgreen",
   },
 });
 

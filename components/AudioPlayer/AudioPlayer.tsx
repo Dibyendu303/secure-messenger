@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import styles from "./styles";
 import prettyMilliseconds from "pretty-ms";
@@ -36,7 +36,6 @@ const AudioPlayer = ({ recordingUri }: IAudioPlayerProps) => {
         onPlayBackStatusUpdate
       );
       setSound(sound);
-      console.log("Successfully created sound from recording.");
     } catch (e) {
       console.log("Error in creating sound from recording.");
       console.log(e);
@@ -70,28 +69,41 @@ const AudioPlayer = ({ recordingUri }: IAudioPlayerProps) => {
 
   return (
     <View style={styles.audioContainer}>
-      {audioProgress === 1 ? (
-        <Pressable onPress={replaySound}>
-          <FontAwesome name="repeat" size={24} color="#595959" />
-        </Pressable>
+      {sound ? (
+        <>
+          {audioProgress === 1 ? (
+            <Pressable onPress={replaySound}>
+              <FontAwesome name="repeat" size={24} color="#595959" />
+            </Pressable>
+          ) : (
+            <Pressable onPress={playPauseSound}>
+              <Feather
+                name={paused ? "play" : "pause"}
+                size={24}
+                color="#595959"
+              />
+            </Pressable>
+          )}
+          <View style={styles.audioProgressBarContainer}>
+            <View style={styles.audioProgressBar}>
+              <View
+                style={[
+                  styles.audioProgressBarCircle,
+                  { left: `${audioProgress * 100}%` },
+                ]}
+              ></View>
+            </View>
+          </View>
+          <View style={{ marginHorizontal: 10 }}>
+            <Text>{getDuration()}</Text>
+          </View>
+        </>
       ) : (
-        <Pressable onPress={playPauseSound}>
-          <Feather name={paused ? "play" : "pause"} size={24} color="#595959" />
-        </Pressable>
-      )}
-      <View style={styles.audioProgressBarContainer}>
-        <View style={styles.audioProgressBar}>
-          <View
-            style={[
-              styles.audioProgressBarCircle,
-              { left: `${audioProgress * 100}%` },
-            ]}
-          ></View>
+        <View style={{ flexDirection: "row" }}>
+          <ActivityIndicator color={"#3777f0"} />
+          <Text style={{ marginLeft: 10, color: "grey" }}>Loading Audio</Text>
         </View>
-      </View>
-      <View style={{ marginHorizontal: 10 }}>
-        <Text>{getDuration()}</Text>
-      </View>
+      )}
     </View>
   );
 };

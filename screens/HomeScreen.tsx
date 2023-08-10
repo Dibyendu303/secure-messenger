@@ -8,6 +8,16 @@ export default function HomeScreen() {
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
 
   useEffect(() => {
+    const subscription = DataStore.observe(ChatRoom).subscribe((msg) => {
+      // console.log(msg.model, msg.opType, msg.element);
+      // if (msg.model === MessageModel && msg.opType === "UPDATE") {
+      //   setMessage((message) => ({ ...message, ...msg.element }));
+      // }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
     const fetchChatRooms = async () => {
       const currUser = await Auth.currentAuthenticatedUser();
       const currUserId = currUser.attributes.sub;
@@ -21,7 +31,7 @@ export default function HomeScreen() {
       const fetchedChatRooms = await Promise.all(
         myChatRooms.map(async (id) => await DataStore.query(ChatRoom, id))
       );
-      // console.log("Chat rooms: ", fetchedChatRooms);
+      console.log(fetchedChatRooms);
       setChatRooms(fetchedChatRooms);
     };
     fetchChatRooms();
