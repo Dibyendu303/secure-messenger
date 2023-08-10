@@ -2,10 +2,34 @@ import { View, Text, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { Auth, DataStore } from "aws-amplify";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { ChatRoomUser, User } from "../src/models";
+
+dayjs.extend(relativeTime);
 
 const ChatRoomHeader = ({ id }) => {
   const [displayUser, setDisplayUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (!displayUser) return;
+    const subscription = DataStore.observe(User, displayUser.id).subscribe(
+      (msg) => {
+        // console.log(msg.model, msg.opType, msg.element);
+        if (msg.model === User && msg.opType === "UPDATE") {
+          const newData = { ...displayUser, ...msg.element };
+          setDisplayUser(newData);
+          console.log("Updating user data: ");
+          console.log("Name: ", newData.name);
+          console.log(
+            "Last seen: ",
+            new Date(newData.lastOnlineAt).toTimeString()
+          );
+        }
+      }
+    );
+    return () => subscription.unsubscribe();
+  }, [displayUser]);
 
   useEffect(() => {
     if (!id) return;
@@ -26,6 +50,14 @@ const ChatRoomHeader = ({ id }) => {
     fetchUsers();
   }, []);
 
+  const getLastOnlineText = () => {
+    if (!displayUser?.lastOnlineAt) return null;
+    const diff = new Date().getTime() - displayUser.lastOnlineAt;
+    if (diff < 5 * 60 * 1000) return "Online";
+    const time = dayjs(displayUser.lastOnlineAt).fromNow();
+    return `Last seen: ${time}`;
+  };
+
   return (
     <View
       style={{
@@ -42,15 +74,21 @@ const ChatRoomHeader = ({ id }) => {
         }}
         style={{ width: 30, height: 30, borderRadius: 30 }}
       />
-      <Text
+      <View
         style={{
           flex: 1,
-          fontWeight: "bold",
           marginLeft: 10,
         }}
       >
-        {displayUser?.name}
-      </Text>
+        <Text style={{ fontWeight: "bold", fontSize: 16 }}>
+          {displayUser?.name}
+        </Text>
+        {displayUser?.lastOnlineAt && (
+          <Text style={{ fontSize: 12, color: "gray" }}>
+            {getLastOnlineText()}
+          </Text>
+        )}
+      </View>
       <Feather
         name="camera"
         size={24}

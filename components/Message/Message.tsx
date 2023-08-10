@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
 import styles from "./styles";
 import { User } from "../../src/models";
@@ -9,7 +9,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Message as MessageModel } from "../../src/models";
 
 const Message = (props) => {
-  const [message, setMessage] = useState<MessageModel>(props.message);
+  const { setAsMessageReply, message: propMessage } = props;
+  const [message, setMessage] = useState<MessageModel>(propMessage);
   const [user, setUser] = useState<User | undefined>();
   const [isReceived, setIsReceived] = useState<boolean | null>(null);
   const [audioUri, setAudioUri] = useState<string | null>(null);
@@ -17,6 +18,10 @@ const Message = (props) => {
   useEffect(() => {
     DataStore.query(User, message.userID).then(setUser);
   }, []);
+
+  useEffect(() => {
+    setMessage(propMessage);
+  }, [propMessage]);
 
   useEffect(() => {
     const subscription = DataStore.observe(MessageModel, message.id).subscribe(
@@ -73,7 +78,8 @@ const Message = (props) => {
   }
 
   return (
-    <View
+    <Pressable
+      onLongPress={() => setAsMessageReply(message)}
       style={[
         styles.container,
         isReceived
@@ -123,7 +129,7 @@ const Message = (props) => {
           />
         </View>
       )}
-    </View>
+    </Pressable>
   );
 };
 

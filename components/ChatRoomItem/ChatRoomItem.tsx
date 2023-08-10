@@ -7,6 +7,7 @@ import { Auth, DataStore } from "aws-amplify";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+
 dayjs.extend(relativeTime);
 
 const ChatRoomItem = ({ chatRoom }) => {

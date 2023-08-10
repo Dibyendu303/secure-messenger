@@ -17,7 +17,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { Auth, DataStore, Storage } from "aws-amplify";
-import { ChatRoom, Message } from "../../src/models";
+import { ChatRoom, Message as MessageModel } from "../../src/models";
 import EmojiSelector from "react-native-emoji-selector";
 import * as ImagePicker from "expo-image-picker";
 import uriToBlob from "../../utils/uriToBlob";
@@ -25,12 +25,14 @@ import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { Audio } from "expo-av";
 import AudioPlayer from "../AudioPlayer";
+import Message from "../Message";
 
 interface IChatRoomProps {
   chatRoom: ChatRoom;
+  messageReplyTo: MessageModel | null;
 }
 
-const MessageInput = ({ chatRoom }: IChatRoomProps) => {
+const MessageInput = ({ chatRoom, messageReplyTo }: IChatRoomProps) => {
   const [message, setMessage] = useState("");
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const [image, setImage] = useState<string>("");
@@ -78,7 +80,7 @@ const MessageInput = ({ chatRoom }: IChatRoomProps) => {
     const user = await Auth.currentAuthenticatedUser();
     try {
       const newMessage = await DataStore.save(
-        new Message({
+        new MessageModel({
           content: message,
           userID: user.attributes.sub,
           chatroomID: chatRoom.id,
@@ -111,7 +113,7 @@ const MessageInput = ({ chatRoom }: IChatRoomProps) => {
       try {
         const user = await Auth.currentAuthenticatedUser();
         const newMessage = await DataStore.save(
-          new Message({
+          new MessageModel({
             content: message,
             image: key,
             userID: user.attributes.sub,
@@ -132,7 +134,7 @@ const MessageInput = ({ chatRoom }: IChatRoomProps) => {
     }
   };
 
-  const updateLastMessage = async (newMessage: Message) => {
+  const updateLastMessage = async (newMessage: MessageModel) => {
     try {
       const original = await DataStore.query(ChatRoom, chatRoom.id);
 
@@ -212,7 +214,7 @@ const MessageInput = ({ chatRoom }: IChatRoomProps) => {
       try {
         const user = await Auth.currentAuthenticatedUser();
         const newMessage = await DataStore.save(
-          new Message({
+          new MessageModel({
             content: message,
             audio: key,
             userID: user.attributes.sub,
@@ -239,6 +241,11 @@ const MessageInput = ({ chatRoom }: IChatRoomProps) => {
       style={[styles.root, { height: isEmojiPickerOpen ? "50%" : "auto" }]}
       keyboardVerticalOffset={100}
     >
+      {messageReplyTo && (
+        <View>
+          <Message message={messageReplyTo} />
+        </View>
+      )}
       {image && (
         <View style={styles.sendImageContainer}>
           <View style={styles.innerContainer}>

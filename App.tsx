@@ -1,21 +1,22 @@
 import "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Amplify, DataStore, Hub } from "aws-amplify";
+import { Amplify, Auth, DataStore, Hub } from "aws-amplify";
 import awsExports from "./src/aws-exports";
 import { withAuthenticator } from "@aws-amplify/ui-react-native";
 import "@azure/core-asynciterator-polyfill";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 import Navigation from "./navigation";
-import { Message } from "./src/models";
+import { Message, User } from "./src/models";
 
 Amplify.configure(awsExports);
 
 function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     // Create listener
@@ -43,6 +44,35 @@ function App() {
     // Remove listener
     return () => listener();
   }, []);
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await updateLastOnline();
+    }, 1 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  const fetchUser = async () => {
+    const authUser = await Auth.currentAuthenticatedUser();
+    const user = await DataStore.query(User, authUser.attributes.sub);
+    if (user) {
+      setUser(user);
+    }
+  };
+
+  const updateLastOnline = async () => {
+    if (!user) return;
+    await DataStore.save(
+      User.copyOf(user, (updated) => {
+        updated.lastOnlineAt = new Date().getTime();
+      })
+    );
+    console.log("Updating time: ", new Date().toTimeString());
+  };
 
   if (!isLoadingComplete) {
     return null;
