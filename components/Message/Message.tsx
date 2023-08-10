@@ -2,15 +2,22 @@ import { View, Text, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import styles from "./styles";
 import { User } from "../../src/models";
-import { Auth, DataStore } from "aws-amplify";
+import { Auth, DataStore, Storage } from "aws-amplify";
 import { S3Image } from "aws-amplify-react-native";
+import AudioPlayer from "../AudioPlayer/AudioPlayer";
 
 const Message = ({ message }) => {
   const [user, setUser] = useState<User | undefined>();
   const [isReceived, setIsReceived] = useState(false);
+  const [audioUri, setAudioUri] = useState<string | null>(null);
+
   useEffect(() => {
     DataStore.query(User, message.userID).then(setUser);
   }, []);
+
+  useEffect(() => {
+    loadAudioUri();
+  }, [message]);
 
   useEffect(() => {
     const checkIfReceived = async () => {
@@ -20,6 +27,21 @@ const Message = ({ message }) => {
     };
     checkIfReceived();
   }, [user]);
+
+  const loadAudioUri = async () => {
+    if (!message.audio) return;
+    try {
+      const resp = await Storage.get(message.audio);
+      console.log(
+        "Successfully retreived audio from S3 storage for message: ",
+        message.content
+      );
+      setAudioUri(resp);
+    } catch (e) {
+      console.log("Error in retreiving audio from S3 storage");
+      console.log(e);
+    }
+  };
 
   if (!user) {
     return <ActivityIndicator />;
@@ -34,6 +56,11 @@ const Message = ({ message }) => {
           : styles.sentMessageContainer,
       ]}
     >
+      {audioUri && (
+        <View style={{ width: 250, marginBottom: message.content ? 5 : 0 }}>
+          <AudioPlayer recordingUri={audioUri} />
+        </View>
+      )}
       {message.image && (
         <View style={{ width: "75%", marginBottom: message.content ? 5 : 0 }}>
           <S3Image

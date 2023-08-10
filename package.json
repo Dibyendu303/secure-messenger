@@ -23,8 +23,10 @@
     "aws-amplify-react-native": "^7.0.2",
     "aws-sdk": "^2.1430.0",
     "crypto": "^1.0.1",
+    "dayjs": "^1.11.9",
     "expo": "~49.0.5",
     "expo-asset": "~8.10.1",
+    "expo-av": "~13.4.1",
     "expo-constants": "~14.4.2",
     "expo-font": "~11.4.0",
     "expo-image-picker": "~14.3.2",
@@ -33,6 +35,7 @@
     "expo-status-bar": "~1.6.0",
     "expo-web-browser": "~12.3.2",
     "metro-config": "^0.78.0",
+    "pretty-ms": "^8.0.0",
     "react": "18.2.0",
     "react-dom": "^18.2.0",
     "react-native": "0.72.3",
@@ -52,6 +55,7 @@
     "@expo/metro-config": "^0.10.7",
     "@types/react": "~18.0.14",
     "@types/react-native": "^0.72.2",
+    "@types/uuid": "^9.0.2",
     "typescript": "^5.1.3"
   },
   "private": true

@@ -39,6 +39,10 @@ export default withAuthenticator(App);
 //     "expo-camera",
 //     {
 //       "cameraPermission": "Allow Secure Messenger to access your camera."
+//     },
+//     "expo-av",
+//     {
+//       "microphonePermission": "Allow Secure Messenger to access your microphone."
 //     }
 //   ]
 // ]

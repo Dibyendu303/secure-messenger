@@ -4,13 +4,10 @@ import styles from "./styles";
 import { useNavigation } from "@react-navigation/native";
 import { ChatRoomUser, Message, User } from "../../src/models";
 import { Auth, DataStore } from "aws-amplify";
-import {
-  SimpleLineIcons,
-  Ionicons,
-  AntDesign,
-  Feather,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
 const ChatRoomItem = ({ chatRoom }) => {
   // const [users, setUsers] = useState<User[]>([]);
@@ -95,6 +92,8 @@ const ChatRoomItem = ({ chatRoom }) => {
     return <ActivityIndicator />;
   }
 
+  const time = dayjs(lastMessage?.createdAt).fromNow();
+
   return (
     <Pressable onPress={onPress} style={styles.container}>
       <Image source={{ uri: displayUser.imageUri }} style={styles.image} />
@@ -106,7 +105,7 @@ const ChatRoomItem = ({ chatRoom }) => {
       <View style={styles.rightContainer}>
         <View style={styles.row}>
           <Text style={styles.name}>{displayUser.name}</Text>
-          <Text style={styles.text}>{lastMessage?.createdAt ?? ""}</Text>
+          <Text style={styles.text}>{time}</Text>
         </View>
         <Text numberOfLines={1} style={styles.text}>
           {getLastMessageContent()}
