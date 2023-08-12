@@ -17,6 +17,7 @@ const ChatRoomItem = ({ chatRoom }) => {
   const [isLastMessageMine, setIsLastMessageMine] = useState<bool>(false);
   const [user, setUser] = useState<string | null>(null);
   const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -34,6 +35,7 @@ const ChatRoomItem = ({ chatRoom }) => {
           null
       );
       setUser(authUser.attributes.sub);
+      setIsLoading(false);
     };
     fetchUsers();
   }, []);
@@ -89,12 +91,15 @@ const ChatRoomItem = ({ chatRoom }) => {
   const onPress = () => {
     navigation.navigate("ChatRoom", { id: chatRoom.id });
   };
+  const time = dayjs(lastMessage?.createdAt).fromNow();
 
   if (!displayUser) {
     return <ActivityIndicator />;
   }
 
-  const time = dayjs(lastMessage?.createdAt).fromNow();
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
 
   return (
     <Pressable onPress={onPress} style={styles.container}>

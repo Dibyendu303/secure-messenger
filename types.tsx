@@ -9,6 +9,7 @@ export type RootStackParamList = {
   ChatRoom: undefined;
   UsersScreen: undefined;
   NotFound: undefined;
+  GroupInfoScreen: undefined;
 };
 
 export type BottomTabParamList = {

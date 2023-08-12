@@ -1,10 +1,11 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { Auth, DataStore } from "aws-amplify";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { ChatRoom, ChatRoomUser, User } from "../src/models";
+import { useNavigation } from "@react-navigation/native";
 
 dayjs.extend(relativeTime);
 
@@ -12,6 +13,7 @@ const ChatRoomHeader = ({ id }) => {
   const [displayUser, setDisplayUser] = useState<User | null>(null);
   const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
   const [allUsers, setAllUsers] = useState<User[]>([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (!displayUser) return;
@@ -71,6 +73,12 @@ const ChatRoomHeader = ({ id }) => {
     return allUsers.map((user) => user.name).join(", ");
   };
 
+  const openInfo = () => {
+    if (isGroup || chatRoom?.name) {
+      navigation.navigate("GroupInfoScreen", { id });
+    }
+  };
+
   return (
     <View
       style={{
@@ -87,7 +95,8 @@ const ChatRoomHeader = ({ id }) => {
         }}
         style={{ width: 30, height: 30, borderRadius: 30 }}
       />
-      <View
+      <Pressable
+        onPress={openInfo}
         style={{
           flex: 1,
           marginLeft: 10,
@@ -106,7 +115,7 @@ const ChatRoomHeader = ({ id }) => {
             {getLastOnlineText()}
           </Text>
         )}
-      </View>
+      </Pressable>
       <Feather
         name="camera"
         size={24}

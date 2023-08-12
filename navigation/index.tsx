@@ -5,7 +5,7 @@ import {
 } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
-import { ColorSchemeName, Image, View, Text } from "react-native";
+import { ColorSchemeName } from "react-native";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import { RootStackParamList } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
@@ -15,6 +15,8 @@ import UsersScreen from "../screens/UsersScreen";
 import ChatRoomScreen from "../screens/ChatRoomScreen";
 import HomeHeader from "./HomeHeader";
 import ChatRoomHeader from "./ChatRoomHeader";
+import GroupInfoScreen from "../screens/GroupInfoScreen";
+import GroupInfoHeader from "./GroupInfoHeader";
 export default function Navigation({
   colorScheme,
 }: {
@@ -47,6 +49,14 @@ function RootNavigator() {
         component={ChatRoomScreen}
         options={({ route }) => ({
           headerTitle: () => <ChatRoomHeader id={route.params?.id} />,
+          headerBackTitleVisible: false,
+        })}
+      />
+      <Stack.Screen
+        name="GroupInfoScreen"
+        component={GroupInfoScreen}
+        options={({ route }) => ({
+          headerTitle: () => <GroupInfoHeader id={route.params?.id} />,
           headerBackTitleVisible: false,
         })}
       />

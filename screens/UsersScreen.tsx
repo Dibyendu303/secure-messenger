@@ -25,6 +25,17 @@ export default function UsersScreen() {
       try {
         const fetchedUsers = await DataStore.query(User);
         setUsers(fetchedUsers);
+        try {
+          const authUser = await Auth.currentAuthenticatedUser();
+          dbUser = await DataStore.query(User, authUser.attributes.sub);
+          const otherUsers = fetchedUsers.filter(
+            (user) => user.id !== authUser.attributes.sub
+          );
+          setUsers(otherUsers);
+        } catch (e) {
+          console.log("Error in getting authenticated user");
+          console.log(e);
+        }
       } catch (e) {
         console.log("Unable to fetch users from Datastore");
         console.log(e);
@@ -78,7 +89,10 @@ export default function UsersScreen() {
       console.log(e);
     }
     if (!dbUser) {
-      Alert.alert("There was an error creating the group");
+      Alert.alert(
+        "Internal Server Error",
+        "There was an error creating the group"
+      );
       return;
     }
     const newChatRoomData = {

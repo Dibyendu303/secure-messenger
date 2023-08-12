@@ -5,6 +5,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Amplify, Auth, DataStore, Hub } from "aws-amplify";
 import awsExports from "./src/aws-exports";
 import { withAuthenticator } from "@aws-amplify/ui-react-native";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import "@azure/core-asynciterator-polyfill";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
@@ -79,7 +80,9 @@ function App() {
   } else {
     return (
       <SafeAreaProvider>
-        <Navigation colorScheme={colorScheme} />
+        <ActionSheetProvider>
+          <Navigation colorScheme={colorScheme} />
+        </ActionSheetProvider>
         <StatusBar />
       </SafeAreaProvider>
     );
