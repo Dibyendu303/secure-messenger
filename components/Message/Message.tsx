@@ -62,7 +62,6 @@ const Message = (props) => {
 
   const setAsRead = async () => {
     if (isReceived === true && message.status !== "READ") {
-      console.log("Set to READ: ", message.content);
       await DataStore.save(
         MessageModel.copyOf(message, (updated) => {
           updated.status = "READ";

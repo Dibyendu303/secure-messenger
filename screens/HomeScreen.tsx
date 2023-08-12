@@ -31,7 +31,6 @@ export default function HomeScreen() {
       const fetchedChatRooms = await Promise.all(
         myChatRooms.map(async (id) => await DataStore.query(ChatRoom, id))
       );
-      console.log(fetchedChatRooms);
       setChatRooms(fetchedChatRooms);
     };
     fetchChatRooms();

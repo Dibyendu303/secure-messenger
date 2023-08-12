@@ -39,11 +39,12 @@ const ChatRoomItem = ({ chatRoom }) => {
   }, []);
 
   useEffect(() => {
-    if (!chatRoom.chatRoomLastMessageId) return;
+    if (!chatRoom?.chatRoomLastMessageId) return;
     getLastMessage();
-  }, []);
+  }, [chatRoom]);
 
   const getLastMessage = async () => {
+    if (!chatRoom?.chatRoomLastMessageId) return;
     try {
       const lastmsg = await DataStore.query(
         Message,
@@ -97,7 +98,10 @@ const ChatRoomItem = ({ chatRoom }) => {
 
   return (
     <Pressable onPress={onPress} style={styles.container}>
-      <Image source={{ uri: displayUser.imageUri }} style={styles.image} />
+      <Image
+        source={{ uri: chatRoom.imageUri || displayUser.imageUri }}
+        style={styles.image}
+      />
       {!!chatRoom.newMessages && (
         <View style={styles.badgeContainer}>
           <Text style={styles.badgeText}>{chatRoom.newMessages}</Text>
@@ -105,7 +109,7 @@ const ChatRoomItem = ({ chatRoom }) => {
       )}
       <View style={styles.rightContainer}>
         <View style={styles.row}>
-          <Text style={styles.name}>{displayUser.name}</Text>
+          <Text style={styles.name}>{chatRoom.name || displayUser.name}</Text>
           <Text style={styles.text}>{time}</Text>
         </View>
         <Text numberOfLines={1} style={styles.text}>

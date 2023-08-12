@@ -4,12 +4,14 @@ import { Feather } from "@expo/vector-icons";
 import { Auth, DataStore } from "aws-amplify";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { ChatRoomUser, User } from "../src/models";
+import { ChatRoom, ChatRoomUser, User } from "../src/models";
 
 dayjs.extend(relativeTime);
 
 const ChatRoomHeader = ({ id }) => {
   const [displayUser, setDisplayUser] = useState<User | null>(null);
+  const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
 
   useEffect(() => {
     if (!displayUser) return;
@@ -19,12 +21,6 @@ const ChatRoomHeader = ({ id }) => {
         if (msg.model === User && msg.opType === "UPDATE") {
           const newData = { ...displayUser, ...msg.element };
           setDisplayUser(newData);
-          console.log("Updating user data: ");
-          console.log("Name: ", newData.name);
-          console.log(
-            "Last seen: ",
-            new Date(newData.lastOnlineAt).toTimeString()
-          );
         }
       }
     );
@@ -33,22 +29,33 @@ const ChatRoomHeader = ({ id }) => {
 
   useEffect(() => {
     if (!id) return;
-    const fetchUsers = async () => {
-      const chatRoomUserIds = (await DataStore.query(ChatRoomUser))
-        .filter((chatRoomUser) => chatRoomUser.chatRoomId === id)
-        .map((user) => user.userId);
-
-      const chatRoomUsers = await Promise.all(
-        chatRoomUserIds.map(async (id) => await DataStore.query(User, id))
-      );
-      const authUser = await Auth.currentAuthenticatedUser();
-      setDisplayUser(
-        chatRoomUsers.find((user) => user.id !== authUser.attributes.sub) ||
-          null
-      );
-    };
+    fetchChatRoom();
     fetchUsers();
   }, []);
+
+  const fetchUsers = async () => {
+    const chatRoomUserIds = (await DataStore.query(ChatRoomUser))
+      .filter((chatRoomUser) => chatRoomUser.chatRoomId === id)
+      .map((user) => user.userId);
+
+    const chatRoomUsers = await Promise.all(
+      chatRoomUserIds.map(async (id) => await DataStore.query(User, id))
+    );
+    setAllUsers(chatRoomUsers);
+    const authUser = await Auth.currentAuthenticatedUser();
+    setDisplayUser(
+      chatRoomUsers.find((user) => user.id !== authUser.attributes.sub) || null
+    );
+  };
+
+  const fetchChatRoom = async () => {
+    try {
+      const chatRoom = await DataStore.query(ChatRoom, id);
+      setChatRoom(chatRoom);
+    } catch (e) {
+      console.log("Error in fetching chatroom in chatroom header. ", e);
+    }
+  };
 
   const getLastOnlineText = () => {
     if (!displayUser?.lastOnlineAt) return null;
@@ -56,6 +63,12 @@ const ChatRoomHeader = ({ id }) => {
     if (diff < 5 * 60 * 1000) return "Online";
     const time = dayjs(displayUser.lastOnlineAt).fromNow();
     return `Last seen: ${time}`;
+  };
+
+  const isGroup = allUsers.length > 2;
+
+  const getUserNames = () => {
+    return allUsers.map((user) => user.name).join(", ");
   };
 
   return (
@@ -70,7 +83,7 @@ const ChatRoomHeader = ({ id }) => {
     >
       <Image
         source={{
-          uri: displayUser?.imageUri,
+          uri: chatRoom?.imageUri || displayUser?.imageUri,
         }}
         style={{ width: 30, height: 30, borderRadius: 30 }}
       />
@@ -81,9 +94,14 @@ const ChatRoomHeader = ({ id }) => {
         }}
       >
         <Text style={{ fontWeight: "bold", fontSize: 16 }}>
-          {displayUser?.name}
+          {chatRoom?.name || displayUser?.name}
         </Text>
-        {displayUser?.lastOnlineAt && (
+        {isGroup && (
+          <Text numberOfLines={1} style={{ fontSize: 12, color: "gray" }}>
+            {getUserNames()}
+          </Text>
+        )}
+        {!isGroup && displayUser?.lastOnlineAt && (
           <Text style={{ fontSize: 12, color: "gray" }}>
             {getLastOnlineText()}
           </Text>
