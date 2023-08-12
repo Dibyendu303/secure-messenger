@@ -25,14 +25,19 @@ import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { Audio } from "expo-av";
 import AudioPlayer from "../AudioPlayer";
-import Message from "../Message";
+import MessageReply from "../MessageReply";
 
 interface IChatRoomProps {
   chatRoom: ChatRoom;
   messageReplyTo: MessageModel | null;
+  setMessageReplyTo: Function;
 }
 
-const MessageInput = ({ chatRoom, messageReplyTo }: IChatRoomProps) => {
+const MessageInput = ({
+  chatRoom,
+  messageReplyTo,
+  setMessageReplyTo,
+}: IChatRoomProps) => {
   const [message, setMessage] = useState("");
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const [image, setImage] = useState<string>("");
@@ -46,6 +51,7 @@ const MessageInput = ({ chatRoom, messageReplyTo }: IChatRoomProps) => {
     setImage("");
     setRecordingUri(null);
     setUploadProgress(0);
+    setMessageReplyTo(null);
   };
 
   const pickImage = async () => {
@@ -85,6 +91,7 @@ const MessageInput = ({ chatRoom, messageReplyTo }: IChatRoomProps) => {
           userID: user.attributes.sub,
           chatroomID: chatRoom.id,
           status: "SENT",
+          replyTo: messageReplyTo?.id,
         })
       );
 
@@ -119,6 +126,7 @@ const MessageInput = ({ chatRoom, messageReplyTo }: IChatRoomProps) => {
             userID: user.attributes.sub,
             chatroomID: chatRoom.id,
             status: "SENT",
+            replyTo: messageReplyTo?.id,
           })
         );
         updateLastMessage(newMessage);
@@ -220,6 +228,7 @@ const MessageInput = ({ chatRoom, messageReplyTo }: IChatRoomProps) => {
             userID: user.attributes.sub,
             chatroomID: chatRoom.id,
             status: "SENT",
+            replyTo: messageReplyTo?.id,
           })
         );
         updateLastMessage(newMessage);
@@ -242,9 +251,10 @@ const MessageInput = ({ chatRoom, messageReplyTo }: IChatRoomProps) => {
       keyboardVerticalOffset={100}
     >
       {messageReplyTo && (
-        <View>
-          <Message message={messageReplyTo} />
-        </View>
+        <MessageReply
+          message={messageReplyTo}
+          setMessageReplyTo={setMessageReplyTo}
+        />
       )}
       {image && (
         <View style={styles.sendImageContainer}>

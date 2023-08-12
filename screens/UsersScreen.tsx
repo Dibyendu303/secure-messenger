@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import UserItem from "../components/UserItem";
-import userData from "../assets/dummy-data/Users";
 import { DataStore } from "aws-amplify";
 import { User } from "../src/models";
+import NewGroupButton from "../components/NewGroupButton";
 
 export default function UsersScreen() {
   const [users, setUsers] = useState<User[]>([]);
@@ -27,6 +27,7 @@ export default function UsersScreen() {
       <FlatList
         data={users}
         renderItem={({ item }) => <UserItem user={item} />}
+        ListHeaderComponent={NewGroupButton}
       />
     </View>
   );

@@ -84,7 +84,11 @@ const ChatRoomScreen = () => {
         )}
         inverted
       />
-      <MessageInput chatRoom={chatRoom} messageReplyTo={messageReplyTo} />
+      <MessageInput
+        chatRoom={chatRoom}
+        messageReplyTo={messageReplyTo}
+        setMessageReplyTo={setMessageReplyTo}
+      />
     </SafeAreaView>
   );
 };

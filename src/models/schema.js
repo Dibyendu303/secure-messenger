@@ -188,6 +188,38 @@ export const schema = {
                         ]
                     }
                 },
+                "Admin": {
+                    "name": "Admin",
+                    "isArray": false,
+                    "type": {
+                        "model": "User"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "association": {
+                        "connectionType": "HAS_ONE",
+                        "associatedWith": [
+                            "id"
+                        ],
+                        "targetNames": [
+                            "chatRoomAdminId"
+                        ]
+                    }
+                },
+                "name": {
+                    "name": "name",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "imageUri": {
+                    "name": "imageUri",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -206,6 +238,13 @@ export const schema = {
                 },
                 "chatRoomLastMessageId": {
                     "name": "chatRoomLastMessageId",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "chatRoomAdminId": {
+                    "name": "chatRoomAdminId",
                     "isArray": false,
                     "type": "ID",
                     "isRequired": false,
@@ -460,5 +499,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "3dec574432362bc8d191d8ed1a32afb2"
+    "version": "a6117b81c612d3056829b0b920843069"
 };

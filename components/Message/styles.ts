@@ -7,9 +7,12 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 10,
     maxWidth: "75%",
+    // backgroundColor: "yellow",
+  },
+  row: {
     flexDirection: "row",
     alignItems: "flex-end",
-    // backgroundColor: "yellow",
+    marginRight: "auto",
   },
   innerContainer: {
     // backgroundColor: "lightblue",
