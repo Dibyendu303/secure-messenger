@@ -3,9 +3,11 @@ import { View, StyleSheet, FlatList, Pressable, Text } from "react-native";
 import { Auth, DataStore } from "aws-amplify";
 import ChatRoomItem from "../components/ChatRoomItem";
 import { ChatRoom, ChatRoomUser } from "../src/models";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen() {
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const subscription = DataStore.observe(ChatRoom).subscribe((msg) => {
@@ -35,27 +37,33 @@ export default function HomeScreen() {
     };
     fetchChatRooms();
   }, []);
-  const logOut = () => {
-    Auth.signOut();
-  };
+
   return (
     <View style={styles.page}>
-      <FlatList
-        data={chatRooms}
-        renderItem={({ item }) => <ChatRoomItem chatRoom={item} />}
-      />
-      <Pressable
-        onPress={logOut}
-        style={{
-          backgroundColor: "#3777f0",
-          height: 50,
-          justifyContent: "center",
-          alignItems: "center",
-          margin: 10,
-        }}
-      >
-        <Text style={{ color: "white" }}>Logout</Text>
-      </Pressable>
+      {chatRooms.length > 0 ? (
+        <FlatList
+          data={chatRooms}
+          renderItem={({ item }) => <ChatRoomItem chatRoom={item} />}
+        />
+      ) : (
+        <View
+          style={{
+            width: "100%",
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Pressable onPress={() => navigation.navigate("UsersScreen")}>
+            <Text
+              style={{ color: "#3777f0", fontSize: 24, fontWeight: "bold" }}
+            >
+              Click here
+            </Text>
+          </Pressable>
+          <Text style={{ fontSize: 18 }}>to start a new chat.</Text>
+        </View>
+      )}
     </View>
   );
 }

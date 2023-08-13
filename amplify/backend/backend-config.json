@@ -45,7 +45,10 @@
           "passwordPolicyCharacters": [],
           "passwordPolicyMinLength": 8
         },
-        "signupAttributes": [],
+        "signupAttributes": [
+          "NAME",
+          "PREFERRED_USERNAME"
+        ],
         "socialProviders": [],
         "usernameAttributes": [
           "EMAIL"

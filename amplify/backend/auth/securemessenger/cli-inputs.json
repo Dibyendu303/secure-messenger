@@ -3,7 +3,7 @@
   "cognitoConfig": {
     "identityPoolName": "testAuthIdentityPool",
     "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "secure21485156",
+    "resourceNameTruncated": "secure115b2faa",
     "userPoolName": "securemessenger",
     "autoVerifiedAttributes": [
       "email"
@@ -14,20 +14,23 @@
     ],
     "smsAuthenticationMessage": "Your authentication code is {####}",
     "smsVerificationMessage": "Your verification code is {####}",
-    "emailVerificationSubject": "Verification code: {####}",
-    "emailVerificationMessage": "Verification code: {####}",
+    "emailVerificationSubject": "Verification Email",
+    "emailVerificationMessage": "<!DOCTYPE html>\n\t<html>\n\t<head>\n\t\t<meta charset=\"UTF-8\">\n\t\t<title>OTP Verification Email</title>\n\t\t<style>\n\t\t\tbody {\n\t\t\t\tbackground-color: #ffffff;\n\t\t\t\tfont-family: Arial, sans-serif;\n\t\t\t\tfont-size: 16px;\n\t\t\t\tline-height: 1.4;\n\t\t\t\tcolor: #333333;\n\t\t\t\tmargin: 0;\n\t\t\t\tpadding: 0;\n\t\t\t}\n\t\n\t\t\t.container {\n\t\t\t\tmax-width: 600px;\n\t\t\t\tmargin: 0 auto;\n\t\t\t\tpadding: 20px;\n\t\t\t\ttext-align: center;\n\t\t\t}\n\t\n\t\t\t.message {\n\t\t\t\tfont-size: 18px;\n\t\t\t\tfont-weight: bold;\n\t\t\t\tmargin-bottom: 20px;\n\t\t\t}\n\t\n\t\t\t.body {\n\t\t\t\tfont-size: 16px;\n\t\t\t\tmargin-bottom: 20px;\n\t\t\t}\n\t\n\t\t\t.cta {\n\t\t\t\tdisplay: inline-block;\n\t\t\t\tpadding: 10px 20px;\n\t\t\t\tbackground-color: #FFD60A;\n\t\t\t\tcolor: #000000;\n\t\t\t\ttext-decoration: none;\n\t\t\t\tborder-radius: 5px;\n\t\t\t\tfont-size: 16px;\n\t\t\t\tfont-weight: bold;\n\t\t\t\tmargin-top: 20px;\n\t\t\t}\n\t\n\t\t\t.support {\n\t\t\t\tfont-size: 14px;\n\t\t\t\tcolor: #999999;\n\t\t\t\tmargin-top: 20px;\n\t\t\t}\n\t\n\t\t\t.highlight {\n\t\t\t\tfont-weight: bold;\n\t\t\t}\n\t\t</style>\n\t\n\t</head>\n\t\n\t<body>\n\t\t<div class=\"container\">\n\t\t\t<div class=\"message\">OTP Verification Email</div>\n\t\t\t<div class=\"body\">\n\t\t\t\t<p>Dear User,</p>\n\t\t\t\t<p>Thank you for registering with SecureChat Pro. To complete your registration, please use the following OTP\n\t\t\t\t\t(One-Time Password) to verify your account:</p>\n\t\t\t\t<h2 class=\"highlight\">{####}</h2>\n\t\t\t\t<p>This OTP is valid for 5 minutes. If you did not request this verification, please disregard this email.\n\t\t\t\tOnce your account is verified, you will have access to our platform and its features.</p>\n\t\t\t</div>\n\t\t\t<div class=\"support\">If you have any questions or need assistance, please feel free to reach out to us at <a\n\t\t\t\t\thref=\"mailto:dibyendudey303@gmail.com\">dibyendudey303@gmail.com</a>. We are here to help!</div>\n\t\t</div>\n\t</body>\n\t\n\t</html>",
     "defaultPasswordPolicy": false,
     "passwordPolicyMinLength": 8,
     "passwordPolicyCharacters": [],
-    "requiredAttributes": [],
+    "requiredAttributes": [
+      "name",
+      "preferred_username"
+    ],
     "aliasAttributes": [],
     "userpoolClientGenerateSecret": false,
     "userpoolClientRefreshTokenValidity": 30,
     "userpoolClientWriteAttributes": [],
     "userpoolClientReadAttributes": [],
-    "userpoolClientLambdaRole": "secure21485156_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "secure115b2faa_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "21485156",
+    "sharedId": "115b2faa",
     "resourceName": "securemessenger",
     "authSelections": "identityPoolAndUserPool",
     "serviceName": "Cognito",
@@ -75,7 +78,7 @@
     "parentStack": {
       "Ref": "AWS::StackId"
     },
-    "authTriggerConnections": "[\n  {\n    \"triggerType\": \"PostConfirmation\",\n    \"lambdaFunctionName\": \"securemessengerPostConfirmation\"\n  }\n]",
-    "permissions": []
+    "permissions": [],
+    "authTriggerConnections": "[\n  {\n    \"triggerType\": \"PostConfirmation\",\n    \"lambdaFunctionName\": \"securemessengerPostConfirmation\"\n  }\n]"
   }
 }

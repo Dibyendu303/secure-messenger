@@ -16,17 +16,17 @@
       "auth": {
         "securemessenger": {}
       },
-      "function": {
-        "securemessengerPostConfirmation": {
-          "deploymentBucketName": "amplify-securemessenger-staging-183254-deployment",
-          "s3Key": "amplify-builds/securemessengerPostConfirmation-45644573784339594d4d-build.zip"
-        }
-      },
       "api": {
         "securemessenger": {}
       },
       "storage": {
         "securemessengerstorage": {}
+      },
+      "function": {
+        "securemessengerPostConfirmation": {
+          "deploymentBucketName": "amplify-securemessenger-staging-183254-deployment",
+          "s3Key": "amplify-builds/securemessengerPostConfirmation-546a532f79534675786c-build.zip"
+        }
       }
     }
   }

@@ -9,21 +9,33 @@ import { User } from "../../src/models";
 import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import { Message as MessageModel } from "../../src/models";
 import MessageReply from "../MessageReply/MessageReply";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PRIVATE_KEY } from "../../screens/SettingsScreen";
+import { useNavigation } from "@react-navigation/native";
+import { box } from "tweetnacl";
+import { decrypt, stringToUint8Array } from "../../utils/crypto";
 
 const Message = (props) => {
   const { setAsMessageReply, message: propMessage } = props;
   const [message, setMessage] = useState<MessageModel>(propMessage);
+  const [decryptedMessage, setDecryptedMessage] = useState<string>("");
   const [user, setUser] = useState<User | undefined>();
   const [isReceived, setIsReceived] = useState<boolean | null>(null);
   const [audioUri, setAudioUri] = useState<string | null>(null);
   const [replyMessage, setReplyMessage] = useState<MessageModel | null>(null);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigation = useNavigation();
 
   const { showActionSheetWithOptions } = useActionSheet();
 
   useEffect(() => {
     DataStore.query(User, message.userID).then(setUser);
   }, []);
+
+  useEffect(() => {
+    decryptMessage();
+  }, [message, user]);
 
   useEffect(() => {
     getReplyMessage();
@@ -62,6 +74,45 @@ const Message = (props) => {
     checkIfReceived();
   }, [user]);
 
+  const decryptMessage = async () => {
+    if (!message?.content || !user?.publicKey) {
+      return;
+    }
+    const ourSecretKeyString = await AsyncStorage.getItem(PRIVATE_KEY);
+    if (!ourSecretKeyString) {
+      Alert.alert(
+        `You haven't generated your key pair yet.`,
+        `Go to settings and generate a new key pair`,
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Go to Settings",
+            onPress: () => navigation.navigate("Settings"),
+            style: "default",
+          },
+        ]
+      );
+      return;
+    }
+    try {
+      const ourSecretKey = stringToUint8Array(ourSecretKeyString);
+      const sharedKey = box.before(
+        stringToUint8Array(user.publicKey),
+        ourSecretKey
+      );
+
+      const decryptedMessage = decrypt(sharedKey, message.content);
+      setDecryptedMessage(decryptedMessage.message);
+      setIsLoading(false);
+    } catch (e) {
+      console.log("Error in decrypting message. ");
+      // console.log("Message: ", message);
+      // console.log(`User: `, user);
+    }
+  };
   const getReplyMessage = async () => {
     if (!message?.replyTo) return;
     const replyMsg = await DataStore.query(MessageModel, message.replyTo);
@@ -84,8 +135,7 @@ const Message = (props) => {
       const resp = await Storage.get(message.audio);
       setAudioUri(resp);
     } catch (e) {
-      console.log("Error in retreiving audio from S3 storage");
-      console.log(e);
+      console.log("Error in retreiving audio from S3 storage. ", e);
     }
   };
 
@@ -128,7 +178,6 @@ const Message = (props) => {
   };
 
   const openActionMenu = () => {
-    console.log("Opening action menu");
     const options = ["Reply", "Delete", "Cancel"];
     const destructiveButtonIndex = 1;
     const cancelButtonIndex = 2;
@@ -144,6 +193,10 @@ const Message = (props) => {
   };
 
   if (!user || isReceived === null) {
+    return <ActivityIndicator />;
+  }
+
+  if (isLoading) {
     return <ActivityIndicator />;
   }
 
@@ -199,7 +252,6 @@ const Message = (props) => {
                       aspectRatio: 4 / 3,
                     }}
                     resizeMode="cover"
-                    handleOnLoad={() => console.log("da-ta!")}
                   />
                 </View>
               )}
@@ -207,7 +259,7 @@ const Message = (props) => {
                 <Text
                   style={isReceived ? styles.receivedText : styles.sentText}
                 >
-                  {message.content}
+                  {decryptedMessage}
                 </Text>
               )}
             </View>

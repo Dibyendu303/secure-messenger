@@ -37,8 +37,7 @@ const AudioPlayer = ({ recordingUri }: IAudioPlayerProps) => {
       );
       setSound(sound);
     } catch (e) {
-      console.log("Error in creating sound from recording.");
-      console.log(e);
+      console.log("Error in creating sound from recording. ", e);
     }
   };
 

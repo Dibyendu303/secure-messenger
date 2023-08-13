@@ -56,10 +56,9 @@ const ChatRoomItem = ({ chatRoom }) => {
       setIsLastMessageMine(lastmsg?.userID === user);
     } catch (e) {
       console.log(
-        "Error in getting last message with chatroomId: ",
-        chatRoom.id
+        `Error in getting last message with chatroomId: ${chatRoom.id}`,
+        e
       );
-      console.log(e);
     }
   };
 

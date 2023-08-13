@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import styles from "./styles";
@@ -17,7 +18,12 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { Auth, DataStore, Storage } from "aws-amplify";
-import { ChatRoom, Message as MessageModel } from "../../src/models";
+import {
+  ChatRoom,
+  ChatRoomUser,
+  Message as MessageModel,
+  User,
+} from "../../src/models";
 import EmojiSelector from "react-native-emoji-selector";
 import * as ImagePicker from "expo-image-picker";
 import uriToBlob from "../../utils/uriToBlob";
@@ -26,6 +32,11 @@ import { v4 as uuidv4 } from "uuid";
 import { Audio } from "expo-av";
 import AudioPlayer from "../AudioPlayer";
 import MessageReply from "../MessageReply";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PRIVATE_KEY } from "../../screens/SettingsScreen";
+import { useNavigation } from "@react-navigation/native";
+import { box } from "tweetnacl";
+import { encrypt, stringToUint8Array } from "../../utils/crypto";
 
 interface IChatRoomProps {
   chatRoom: ChatRoom;
@@ -44,6 +55,7 @@ const MessageInput = ({
   const [uploadprogress, setUploadProgress] = useState(0);
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [recordingUri, setRecordingUri] = useState<string | null>(null);
+  const navigation = useNavigation();
 
   const resetFields = () => {
     setMessage("");
@@ -82,26 +94,84 @@ const MessageInput = ({
     }
   };
 
-  const sendMessage = async () => {
-    const user = await Auth.currentAuthenticatedUser();
+  const sendMessageToUser = async (user: User, fromUserId: string) => {
     try {
+      // encrypt using our secret key and recipient's public key
+      const ourSecretKeyString = await AsyncStorage.getItem(PRIVATE_KEY);
+      if (!ourSecretKeyString) {
+        Alert.alert(
+          `You haven't generated your key pair yet.`,
+          `Go to settings and generate a new key pair`,
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Go to Settings",
+              onPress: () => navigation.navigate("Settings"),
+              style: "default",
+            },
+          ]
+        );
+        return;
+      }
+
+      if (!user?.publicKey) {
+        Alert.alert(
+          `Can't send message`,
+          `${user.name} has not generated a key pair yet.`
+        );
+        return;
+      }
+
+      const ourSecretKey = stringToUint8Array(ourSecretKeyString);
+      const sharedKey = box.before(
+        stringToUint8Array(user.publicKey),
+        ourSecretKey
+      );
+      const encryptedMessage = encrypt(sharedKey, { message });
+
       const newMessage = await DataStore.save(
         new MessageModel({
-          content: message,
-          userID: user.attributes.sub,
+          content: encryptedMessage,
+          userID: fromUserId,
           chatroomID: chatRoom.id,
+          forUserId: user.id,
           status: "SENT",
           replyTo: messageReplyTo?.id,
         })
       );
 
-      updateLastMessage(newMessage);
-      resetFields();
+      // updateLastMessage(newMessage);
       console.log("Message sent successfully");
     } catch (e) {
-      console.log("Error while sending message");
-      console.log(e);
+      console.log("Error while sending message. ", e);
     }
+  };
+
+  const sendMessage = async () => {
+    // get all the users of this chatroom
+    const userIds = (
+      await DataStore.query(ChatRoomUser, (c) => c.chatRoomId.eq(chatRoom.id))
+    ).map((user) => user.userId);
+
+    const users = await Promise.all(
+      userIds.map(
+        async (selectedUser) => await DataStore.query(User, selectedUser)
+      )
+    );
+
+    const authUser = await Auth.currentAuthenticatedUser();
+
+    // for each user, encrypt the content with his public key and save it as a new message
+    await Promise.all(
+      users.map(
+        async (user) => await sendMessageToUser(user, authUser.attributes.sub)
+      )
+    );
+
+    resetFields();
   };
 
   const progressCallback = (progress) => {
@@ -133,12 +203,10 @@ const MessageInput = ({
         console.log("Successfully sent image as message");
         resetFields();
       } catch (e) {
-        console.log("Error in sending image as message.");
-        console.log(e);
+        console.log("Error in sending image as message. ", e);
       }
     } catch (e) {
-      console.log("Error in uploading image to Storage");
-      console.log(e);
+      console.log("Error in uploading image to Storage. ", e);
     }
   };
 
@@ -154,33 +222,28 @@ const MessageInput = ({
         );
       }
     } catch (e) {
-      console.log("Error while updating chat room last message");
-      console.log(e);
+      console.log("Error while updating chat room last message. ", e);
     }
   };
 
   async function startRecording() {
     try {
-      console.log("Requesting permissions..");
       await Audio.requestPermissionsAsync();
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
       });
 
-      console.log("Starting recording..");
       const { recording } = await Audio.Recording.createAsync(
         Audio.RecordingOptionsPresets.HIGH_QUALITY
       );
       setRecording(recording);
-      console.log("Recording started");
     } catch (err) {
-      console.error("Failed to start recording", err);
+      console.error("Failed to start recording. ", err);
     }
   }
 
   async function stopRecording() {
-    console.log("Stopping recording..");
     if (!recording) return;
     setRecording(null);
     try {
@@ -189,12 +252,10 @@ const MessageInput = ({
         allowsRecordingIOS: false,
       });
       const uri = recording.getURI();
-      console.log("Recording stopped and stored at", uri);
       setRecordingUri(uri);
       setImage("");
     } catch (e) {
-      console.log("Error in saving recording.");
-      console.log(e);
+      console.log("Error in saving recording. ", e);
     }
   }
 
@@ -235,12 +296,10 @@ const MessageInput = ({
         console.log("Successfully sent audio as message");
         resetFields();
       } catch (e) {
-        console.log("Error in sending audio as message.");
-        console.log(e);
+        console.log("Error in sending audio as message. ", e);
       }
     } catch (e) {
-      console.log("Error in uploading audio to Storage");
-      console.log(e);
+      console.log("Error in uploading audio to Storage. ", e);
     }
   };
 

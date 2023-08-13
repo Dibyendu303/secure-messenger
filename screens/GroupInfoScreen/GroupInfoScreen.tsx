@@ -84,7 +84,6 @@ const GroupInfoScreen = () => {
         await DataStore.delete(toDelete[0]);
         const filteredArr = allUsers.filter((item) => item.id !== user.id);
         setAllUsers(filteredArr);
-        console.log(`Removed ${user.name}: ${user.id} from the group.`);
       } catch (e) {
         console.log(
           `Unable to delete user ${user.id} from chatroom ${chatRoom.id}.`,

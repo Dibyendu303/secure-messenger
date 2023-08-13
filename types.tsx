@@ -10,6 +10,7 @@ export type RootStackParamList = {
   UsersScreen: undefined;
   NotFound: undefined;
   GroupInfoScreen: undefined;
+  Settings: undefined;
 };
 
 export type BottomTabParamList = {

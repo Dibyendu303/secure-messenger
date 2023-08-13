@@ -17,6 +17,7 @@ import HomeHeader from "./HomeHeader";
 import ChatRoomHeader from "./ChatRoomHeader";
 import GroupInfoScreen from "../screens/GroupInfoScreen";
 import GroupInfoHeader from "./GroupInfoHeader";
+import SettingsScreen from "../screens/SettingsScreen";
 export default function Navigation({
   colorScheme,
 }: {
@@ -67,6 +68,7 @@ function RootNavigator() {
           title: "Users",
         }}
       />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen
         name="NotFound"
         component={NotFoundScreen}

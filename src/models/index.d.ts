@@ -23,6 +23,7 @@ type EagerMessage = {
   readonly audio?: string | null;
   readonly status?: MessageStatus | keyof typeof MessageStatus | null;
   readonly replyTo?: string | null;
+  readonly forUserId?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -40,6 +41,7 @@ type LazyMessage = {
   readonly audio?: string | null;
   readonly status?: MessageStatus | keyof typeof MessageStatus | null;
   readonly replyTo?: string | null;
+  readonly forUserId?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -101,11 +103,14 @@ type EagerUser = {
   };
   readonly id: string;
   readonly name: string;
-  readonly imageUri?: string | null;
-  readonly status?: string | null;
+  readonly email?: string | null;
+  readonly userName?: string | null;
   readonly Messages?: (Message | null)[] | null;
   readonly chatrooms?: (ChatRoomUser | null)[] | null;
   readonly lastOnlineAt?: number | null;
+  readonly publicKey?: string | null;
+  readonly status?: string | null;
+  readonly imageUri?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -117,11 +122,14 @@ type LazyUser = {
   };
   readonly id: string;
   readonly name: string;
-  readonly imageUri?: string | null;
-  readonly status?: string | null;
+  readonly email?: string | null;
+  readonly userName?: string | null;
   readonly Messages: AsyncCollection<Message>;
   readonly chatrooms: AsyncCollection<ChatRoomUser>;
   readonly lastOnlineAt?: number | null;
+  readonly publicKey?: string | null;
+  readonly status?: string | null;
+  readonly imageUri?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }

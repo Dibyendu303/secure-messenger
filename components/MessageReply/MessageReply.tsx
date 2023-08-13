@@ -30,8 +30,7 @@ const MessageReply = ({ message, setMessageReplyTo }: IMessageReplyProps) => {
       const user = await DataStore.query(User, userID);
       setUser(user);
     } catch (e) {
-      console.log("Unable to fetch message user in reply message");
-      console.log(e);
+      console.log("Unable to fetch message user in reply message. ", e);
     }
   };
   const fetchCurrUser = async () => {
@@ -40,8 +39,7 @@ const MessageReply = ({ message, setMessageReplyTo }: IMessageReplyProps) => {
       const dbUser = await DataStore.query(User, authUser.attributes.sub);
       setCurrUser(dbUser);
     } catch (e) {
-      console.log("Unable to fetch auth user in reply message");
-      console.log(e);
+      console.log("Unable to fetch auth user in reply message. ", e);
     }
   };
 

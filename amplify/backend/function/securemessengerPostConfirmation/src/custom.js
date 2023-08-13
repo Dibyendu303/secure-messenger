@@ -29,8 +29,12 @@ exports.handler = async (event, context) => {
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),
     id: event.request.userAttributes.sub,
-    name: event.request.userAttributes.email,
+    name: event.request.userAttributes.name,
+    email: event.request.userAttributes.email,
+    userName: event.request.userAttributes.preferred_username,
   }
+
+  console.log('User attributes: ', event.request.userAttributes);
 
   const command = new PutCommand({
     TableName: tableName,

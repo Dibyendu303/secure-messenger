@@ -61,6 +61,13 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "forUserId": {
+                    "name": "forUserId",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -293,15 +300,15 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "imageUri": {
-                    "name": "imageUri",
+                "email": {
+                    "name": "email",
                     "isArray": false,
                     "type": "String",
                     "isRequired": false,
                     "attributes": []
                 },
-                "status": {
-                    "name": "status",
+                "userName": {
+                    "name": "userName",
                     "isArray": false,
                     "type": "String",
                     "isRequired": false,
@@ -343,6 +350,27 @@ export const schema = {
                     "name": "lastOnlineAt",
                     "isArray": false,
                     "type": "AWSTimestamp",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "publicKey": {
+                    "name": "publicKey",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "status": {
+                    "name": "status",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "imageUri": {
+                    "name": "imageUri",
+                    "isArray": false,
+                    "type": "String",
                     "isRequired": false,
                     "attributes": []
                 },
@@ -499,5 +527,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "a6117b81c612d3056829b0b920843069"
+    "version": "1af9ecfda9440419ae4a7af86ee4b497"
 };

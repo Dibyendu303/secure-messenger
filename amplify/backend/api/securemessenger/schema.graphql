@@ -13,6 +13,7 @@ type Message @model @auth(rules: [{allow: public}]) {
   audio: String
   status: MessageStatus
   replyTo: ID
+  forUserId: String
 }
 
 type ChatRoom @model @auth(rules: [{allow: public}]) {
@@ -29,10 +30,13 @@ type ChatRoom @model @auth(rules: [{allow: public}]) {
 type User @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
-  imageUri: String
-  status: String
+  email: String
+  userName: String
   Messages: [Message] @hasMany(indexName: "byUser", fields: ["id"])
   chatrooms: [ChatRoom] @manyToMany(relationName: "ChatRoomUser")
   lastOnlineAt: AWSTimestamp
+  publicKey: String
+  status: String
+  imageUri: String
 }
  

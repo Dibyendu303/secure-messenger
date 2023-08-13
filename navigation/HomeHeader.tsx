@@ -1,6 +1,6 @@
 import { View, Text, Image, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Feather } from "@expo/vector-icons";
+import { Feather, AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Auth, DataStore } from "aws-amplify";
 import { User } from "../src/models";
@@ -44,12 +44,14 @@ const HomeHeader = (props) => {
       >
         Signal
       </Text>
-      <Feather
-        name="camera"
-        size={24}
-        color="black"
-        style={{ marginRight: 20 }}
-      />
+      <Pressable onPress={() => navigation.navigate("Settings")}>
+        <AntDesign
+          name="setting"
+          size={24}
+          color="black"
+          style={{ marginRight: 20 }}
+        />
+      </Pressable>
       <Pressable onPress={() => navigation.navigate("UsersScreen")}>
         <Feather name="edit-2" size={24} color="black" />
       </Pressable>

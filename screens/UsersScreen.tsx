@@ -6,6 +6,7 @@ import {
   Pressable,
   Text,
   Alert,
+  View,
 } from "react-native";
 import UserItem from "../components/UserItem";
 import { Auth, DataStore } from "aws-amplify";
@@ -27,18 +28,15 @@ export default function UsersScreen() {
         setUsers(fetchedUsers);
         try {
           const authUser = await Auth.currentAuthenticatedUser();
-          dbUser = await DataStore.query(User, authUser.attributes.sub);
           const otherUsers = fetchedUsers.filter(
             (user) => user.id !== authUser.attributes.sub
           );
           setUsers(otherUsers);
         } catch (e) {
-          console.log("Error in getting authenticated user");
-          console.log(e);
+          console.log("Error in getting authenticated user. ", e);
         }
       } catch (e) {
-        console.log("Unable to fetch users from Datastore");
-        console.log(e);
+        console.log("Unable to fetch users from Datastore. ", e);
       }
     };
     fetchUsers();
@@ -54,14 +52,13 @@ export default function UsersScreen() {
       const authUser = await Auth.currentAuthenticatedUser();
       dbUser = await DataStore.query(User, authUser.attributes.sub);
     } catch (e) {
-      console.log("Error in getting authenticated user");
-      console.log(e);
+      console.log("Error in getting authenticated user. ", e);
     }
     if (!dbUser) return null;
     // check if there is already a chatroom then redirect there
     const myChatRooms = (
       await DataStore.query(ChatRoomUser, (chatRoomUser) =>
-        chatRoomUser.userId.eq(dbUser.id)
+        chatRoomUser.userId.eq(dbUser?.id)
       )
     ).map((chatRoomUser) => chatRoomUser.chatRoomId);
 
@@ -85,8 +82,7 @@ export default function UsersScreen() {
       const authUser = await Auth.currentAuthenticatedUser();
       dbUser = await DataStore.query(User, authUser.attributes.sub);
     } catch (e) {
-      console.log("Error in getting authenticated user");
-      console.log(e);
+      console.log("Error in getting authenticated user. ", e);
     }
     if (!dbUser) {
       Alert.alert(
@@ -130,12 +126,10 @@ export default function UsersScreen() {
 
         navigation.navigate("ChatRoom", { id: newChatRoom.id });
       } catch (e) {
-        console.log("Error in adding users to chatroom");
-        console.log(e);
+        console.log("Error in adding users to chatroom. ", e);
       }
     } catch (e) {
-      console.log("Error in creating chatroom.");
-      console.log(e);
+      console.log("Error in creating chatroom. ", e);
     }
   };
 
@@ -167,25 +161,47 @@ export default function UsersScreen() {
 
   return (
     <SafeAreaView style={styles.page}>
-      <FlatList
-        data={users}
-        renderItem={({ item }) => (
-          <UserItem
-            user={item}
-            onPress={() => onUserPress(item)}
-            isSelected={isNewGroup ? isUserSelected(item) : undefined}
+      {users.length > 0 ? (
+        <>
+          <FlatList
+            data={users}
+            renderItem={({ item }) => (
+              <UserItem
+                user={item}
+                onPress={() => onUserPress(item)}
+                isSelected={isNewGroup ? isUserSelected(item) : undefined}
+              />
+            )}
+            ListHeaderComponent={() => (
+              <NewGroupButton onPress={() => setIsNewGroup(!isNewGroup)} />
+            )}
           />
-        )}
-        ListHeaderComponent={() => (
-          <NewGroupButton onPress={() => setIsNewGroup(!isNewGroup)} />
-        )}
-      />
-      {isNewGroup && selectedUsers.length > 0 && (
-        <Pressable style={styles.button} onPress={saveGroup}>
-          <Text style={styles.buttonText}>
-            Save group ({selectedUsers.length})
+          {isNewGroup && selectedUsers.length > 0 && (
+            <Pressable style={styles.button} onPress={saveGroup}>
+              <Text style={styles.buttonText}>
+                Save group ({selectedUsers.length})
+              </Text>
+            </Pressable>
+          )}
+        </>
+      ) : (
+        <View
+          style={{
+            width: "100%",
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <Text style={{ fontSize: 24, fontWeight: "700" }}>No Users</Text>
+          <Text style={{ fontSize: 18 }}>
+            <Text style={{ color: "#3777f0", fontWeight: "bold" }}>
+              Click here
+            </Text>{" "}
+            to invite your friends.
           </Text>
-        </Pressable>
+        </View>
       )}
     </SafeAreaView>
   );
