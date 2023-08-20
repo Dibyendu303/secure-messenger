@@ -91,7 +91,10 @@ const ChatRoomHeader = ({ id }) => {
     >
       <Image
         source={{
-          uri: chatRoom?.imageUri || displayUser?.imageUri,
+          uri:
+            chatRoom?.imageUri ||
+            displayUser?.imageUri ||
+            "https://dib-aws-bucket.s3.ap-south-1.amazonaws.com/user_icon.png",
         }}
         style={{ width: 30, height: 30, borderRadius: 30 }}
       />

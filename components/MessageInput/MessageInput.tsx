@@ -132,9 +132,40 @@ const MessageInput = ({
       );
       const encryptedMessage = encrypt(sharedKey, { message });
 
+      let key = null;
+      if (image) {
+        try {
+          const blob = await uriToBlob(image);
+          const resp = await Storage.put(`${uuidv4()}.png`, blob, {
+            progressCallback,
+          });
+          key = resp.key;
+          console.log("Image uploaded to Storage");
+        } catch (e) {
+          console.log("Error in uploading image to storage. ", e);
+        }
+      }
+
+      let audioKey = null;
+      if (recordingUri) {
+        const uriExtension = recordingUri.split(".").pop();
+        try {
+          const blob = await uriToBlob(recordingUri);
+          const resp = await Storage.put(`${uuidv4()}.${uriExtension}`, blob, {
+            progressCallback,
+          });
+          audioKey = resp.key;
+          console.log("Audio uploaded to Storage");
+        } catch (e) {
+          console.log("Error in uploading audio to Storage. ", e);
+        }
+      }
+
       const newMessage = await DataStore.save(
         new MessageModel({
           content: encryptedMessage,
+          image: key,
+          audio: audioKey,
           userID: fromUserId,
           chatroomID: chatRoom.id,
           forUserId: user.id,
@@ -176,38 +207,6 @@ const MessageInput = ({
 
   const progressCallback = (progress) => {
     setUploadProgress(progress.loaded / progress.total);
-  };
-
-  const sendImage = async () => {
-    if (!image) return;
-    try {
-      const blob = await uriToBlob(image);
-      const { key } = await Storage.put(`${uuidv4()}.png`, blob, {
-        progressCallback,
-      });
-      console.log("Image uploaded to Storage");
-
-      try {
-        const user = await Auth.currentAuthenticatedUser();
-        const newMessage = await DataStore.save(
-          new MessageModel({
-            content: message,
-            image: key,
-            userID: user.attributes.sub,
-            chatroomID: chatRoom.id,
-            status: "SENT",
-            replyTo: messageReplyTo?.id,
-          })
-        );
-        updateLastMessage(newMessage);
-        console.log("Successfully sent image as message");
-        resetFields();
-      } catch (e) {
-        console.log("Error in sending image as message. ", e);
-      }
-    } catch (e) {
-      console.log("Error in uploading image to Storage. ", e);
-    }
   };
 
   const updateLastMessage = async (newMessage: MessageModel) => {
@@ -264,43 +263,8 @@ const MessageInput = ({
   };
 
   const onPress = () => {
-    if (image) sendImage();
-    else if (recordingUri) sendAudio();
-    else if (message) sendMessage();
+    if (message || recordingUri || image) sendMessage();
     else onPlusClicked();
-  };
-
-  const sendAudio = async () => {
-    if (!recordingUri) return;
-    const uriExtension = recordingUri.split(".").pop();
-    try {
-      const blob = await uriToBlob(recordingUri);
-      const { key } = await Storage.put(`${uuidv4()}.${uriExtension}`, blob, {
-        progressCallback,
-      });
-      console.log("Audio uploaded to Storage");
-
-      try {
-        const user = await Auth.currentAuthenticatedUser();
-        const newMessage = await DataStore.save(
-          new MessageModel({
-            content: message,
-            audio: key,
-            userID: user.attributes.sub,
-            chatroomID: chatRoom.id,
-            status: "SENT",
-            replyTo: messageReplyTo?.id,
-          })
-        );
-        updateLastMessage(newMessage);
-        console.log("Successfully sent audio as message");
-        resetFields();
-      } catch (e) {
-        console.log("Error in sending audio as message. ", e);
-      }
-    } catch (e) {
-      console.log("Error in uploading audio to Storage. ", e);
-    }
   };
 
   return (

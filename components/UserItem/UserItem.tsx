@@ -16,7 +16,14 @@ const ChatRoomItem = ({
       onLongPress={onLongPress}
       style={styles.container}
     >
-      <Image source={{ uri: user.imageUri }} style={styles.image} />
+      <Image
+        source={{
+          uri:
+            user.imageUri ??
+            "https://dib-aws-bucket.s3.ap-south-1.amazonaws.com/user_icon.png",
+        }}
+        style={styles.image}
+      />
       <View style={styles.rightContainer}>
         <View style={styles.row}>
           <Text style={styles.name}>{user.name}</Text>

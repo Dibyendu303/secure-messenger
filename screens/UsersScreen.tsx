@@ -26,6 +26,10 @@ export default function UsersScreen() {
       try {
         const fetchedUsers = await DataStore.query(User);
         setUsers(fetchedUsers);
+        const myUser = await DataStore.query(
+          User,
+          "f4c864c8-e0b1-7070-490e-49dd91d0a3a5"
+        );
         try {
           const authUser = await Auth.currentAuthenticatedUser();
           const otherUsers = fetchedUsers.filter(
@@ -81,6 +85,11 @@ export default function UsersScreen() {
     try {
       const authUser = await Auth.currentAuthenticatedUser();
       dbUser = await DataStore.query(User, authUser.attributes.sub);
+
+      const myUser = await DataStore.query(
+        User,
+        "f4c864c8-e0b1-7070-490e-49dd91d0a3a5"
+      );
     } catch (e) {
       console.log("Error in getting authenticated user. ", e);
     }

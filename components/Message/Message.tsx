@@ -109,8 +109,6 @@ const Message = (props) => {
       setIsLoading(false);
     } catch (e) {
       console.log("Error in decrypting message. ");
-      // console.log("Message: ", message);
-      // console.log(`User: `, user);
     }
   };
   const getReplyMessage = async () => {
@@ -154,11 +152,11 @@ const Message = (props) => {
   const confirmDelete = () => {
     Alert.alert("Delete message", "Are you sure want to delete this message?", [
       {
-        text: "Canecl",
+        text: "Cancel",
         style: "cancel",
       },
       {
-        text: "Remove",
+        text: "Delete",
         onPress: deleteMessage,
         style: "destructive",
       },

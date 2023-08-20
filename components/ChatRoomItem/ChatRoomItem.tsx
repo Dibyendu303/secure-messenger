@@ -103,7 +103,12 @@ const ChatRoomItem = ({ chatRoom }) => {
   return (
     <Pressable onPress={onPress} style={styles.container}>
       <Image
-        source={{ uri: chatRoom.imageUri || displayUser.imageUri }}
+        source={{
+          uri:
+            chatRoom.imageUri ||
+            displayUser.imageUri ||
+            "https://dib-aws-bucket.s3.ap-south-1.amazonaws.com/user_icon.png",
+        }}
         style={styles.image}
       />
       {!!chatRoom.newMessages && (

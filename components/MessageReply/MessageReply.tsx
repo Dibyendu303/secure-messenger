@@ -4,11 +4,17 @@ import {
   StyleSheet,
   ActivityIndicator,
   Pressable,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Message, User } from "../../src/models";
 import { AntDesign, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import { Auth, DataStore } from "aws-amplify";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PRIVATE_KEY } from "../../screens/SettingsScreen";
+import { useNavigation } from "@react-navigation/native";
+import { decrypt, stringToUint8Array } from "../../utils/crypto";
+import { box } from "tweetnacl";
 
 interface IMessageReplyProps {
   message: Message;
@@ -18,6 +24,8 @@ interface IMessageReplyProps {
 const MessageReply = ({ message, setMessageReplyTo }: IMessageReplyProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [currUser, setCurrUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
   useEffect(() => {
     fetchCurrUser();
@@ -43,8 +51,47 @@ const MessageReply = ({ message, setMessageReplyTo }: IMessageReplyProps) => {
     }
   };
 
+  const decryptMessage = async (content) => {
+    if (!user?.publicKey) {
+      return;
+    }
+    const ourSecretKeyString = await AsyncStorage.getItem(PRIVATE_KEY);
+
+    if (!ourSecretKeyString) {
+      Alert.alert(
+        `You haven't generated your key pair yet.`,
+        `Go to settings and generate a new key pair`,
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Go to Settings",
+            onPress: () => navigation.navigate("Settings"),
+            style: "default",
+          },
+        ]
+      );
+      return;
+    }
+    try {
+      const ourSecretKey = stringToUint8Array(ourSecretKeyString);
+      const sharedKey = box.before(
+        stringToUint8Array(user.publicKey),
+        ourSecretKey
+      );
+
+      const decryptedMessage = decrypt(sharedKey, content);
+      setLoading(false);
+      return decryptedMessage.message;
+    } catch (e) {
+      console.log("Error in decrypting message. ");
+    }
+  };
+
   const getContent = () => {
-    if (message.content) return message.content;
+    if (message.content) return decryptMessage(message.content);
     else if (message.image)
       return (
         <Text>
